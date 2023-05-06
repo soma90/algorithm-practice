@@ -23,9 +23,8 @@ console.log(output); // --> [ ]
  */
 
 function drop(num, arr) {
-  if(arr.length === 0 || num ===  0) 
-    return arr;
-  
+  if (arr.length === 0 || num === 0) return arr;
+
   return drop(num - 1, arr.slice(1));
 }
 
