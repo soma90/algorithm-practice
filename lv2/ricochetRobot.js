@@ -52,94 +52,62 @@ function solution(board) {
 
   //R, G위치 저장
   let r = [];
-  let g = [];
+
   for (let i = 0; i < board.length; i++) {
     for (let j = 0; j < board[i].length; j++) {
       if (board[i][j] === "R") r = [i, j];
-      if (board[i][j] === "G") g = [i, j];
     }
   }
 
-  //G위치 가능한지 판별
-  const [row, col] = g;
-  //console.log(board[row][col - 1])
-  if (
-    (board[row - 1] ? board[row - 1][col] === "." : false) &&
-    (board[row][col - 1] ? board[row][col - 1] === "." : false) &&
-    (board[row + 1] ? board[row + 1][col] === "." : false) &&
-    (board[row][col + 1] ? board[row][col + 1] === "." : false)
-  )
-    return -1;
-
-  //
-
   let visited = Array.from(Array(board.length), () =>
-    Array(board[0].length).fill(false)
+    Array(board[0].length).fill(0)
   );
- /*  let visited = Array.from(Array(board.length), () =>
-    Array.from(Array(board[0].length), () => Array(4).fill(false))
-  ); */
-  //console.log(visited)
 
-  function dfs(x, y, sum) {    
-    if (board[x][y] === "G") {
-      answer.push(sum);
-      //console.log("goal");
-      return;
-    }
-    if (visited[x][y]) {
-      return;
-    }
-    /* let allDirectionsChecked = true;
-    for (let i = 0; i < 4; i++) {
-      if (!visited[x][y][i]) {
-        allDirectionsChecked = false;
-        break;
-      }
-    }
-    if (allDirectionsChecked) {
-      return;
-    } */
-    //console.log(visited[x][y])
-    //console.log(x, y, sum);
-    sum++;
+  function dfs(x, y, sum) {
+    console.log(x, y, sum);
     let dx = [0, 0, 1, -1];
     let dy = [1, -1, 0, 0];
-    //visited[x][y] = true;
-    //let sum = parseInt(board[x][y]);
+
     for (let i = 0; i < 4; i++) {
-      //visited[x][y][i] = true;
       let nx = x;
-      let ny = y;      
-      while (true) {
+      let ny = y;
+
+      //로봇 이동
+      while (
+        nx >= 0 &&
+        nx < board.length &&
+        ny >= 0 &&
+        ny < board[0].length &&
+        board[nx][ny] !== "D"
+      ) {
         nx += dx[i];
         ny += dy[i];
+      }
+      nx = nx - dx[i];
+      ny = ny - dy[i];
 
-        if (
-          nx < 0 ||
-          nx >= board.length ||
-          ny < 0 ||
-          ny >= board[0].length ||
-          board[nx][ny] === "D"
-        ) {          
-          visited[x][y] = true;
-          dfs(nx - dx[i], ny - dy[i], sum);          
-          visited[x][y] = false;
-          break;
-        }
+      //G찾았을때
+      if (board[nx][ny] === "G") {
+        answer.push(sum + 1);
+        //console.log("goal", sum + 1);
+        return;
+      }
+      //G못찾으면 경로 탐색
+      if (!visited[nx][ny] || visited[nx][ny] > sum + 1) {
+        visited[nx][ny] = sum + 1;
+        dfs(nx, ny, sum + 1);
       }
     }
-    //return sum;
   }
 
   dfs(r[0], r[1], 0);
 
-  //return Math.min(...answer);
-  return answer.sort((a, b) => a - b);
+  return answer.length === 0 ? -1: Math.min(...answer);
+  //return answer.sort();
 }
 
 let result = solution(["...D..R", ".D.G...", "....D.D", "D....D.", "..D...."]);
 console.log(result);
 
-//result = solution([".D.R", "....", ".G..", "...D"])
-//console.log(result)
+result = solution([".D.R", "....", ".G..", "...D"])
+console.log(result)
