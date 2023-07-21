@@ -56,7 +56,7 @@ function solution(n) {
 
   triangularSnail(n);
 
-  return answer;
+  return answer.flat();
 }
 
 /*   for (let i = 0; i < n; i++) {
