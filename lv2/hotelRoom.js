@@ -40,36 +40,35 @@ function solution(book_time) {
     arr.map((time, index) => {
       let [hours, minutes] = time.split(":").map(Number);
       if (index === 1) {
-
         //청소시간
         minutes += 10;
-      } 
+      }
       return hours * 60 + minutes;
     })
   );
   //빠른시간순으로 소트
   bookTimeMin.sort((a, b) => a[0] - b[0]);
-  console.log(bookTimeMin)
+  //console.log(bookTimeMin);
 
-  let answer = 1;
-  let room = [bookTimeMin[0]]; //현재 대실상태
+  let booked = []; //현재 대실상태
 
-  for (let i = 1; i < bookTimeMin.length; i++) {
+  for (let i = 0; i < bookTimeMin.length; i++) {
     const [start, end] = bookTimeMin[i];
     //대실되어 있는 방시간 체크
-    const roomCpy = [...room];
-    for (let j = 0; j < roomCpy.length; j++) {
-      const [startPrev, endPrev] = roomCpy[j];
+    let isBooked = false;
+    for (let j = 0; j < booked.length; j++) {
+      const endPrev = booked[j].at(-1);
       if (endPrev <= start) {
-        room.splice(j, 1);
+        booked[j].push(end);
+        isBooked = true;
+        break;
       }
     }
-    room.push(bookTimeMin[i]);
-    if (answer < room.length) answer = room.length;
-    console.log(room)
+    //기존 방에추가할 수 없는 경우 새로운 방에 추가
+    if (!isBooked) booked.push([end]);
   }
 
-  return answer;
+  return booked.length;
 }
 
 let result = solution([
