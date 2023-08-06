@@ -41,28 +41,17 @@ arrayA	arrayB	result
 영희가 가진 카드들에 적힌 숫자는 모두 7로 나눌 수 없습니다. 따라서 최대값인 7을 return 합니다.
 */
 
-//공약수를 이용한 풀이
+//최대 공약수를 이용한 풀이
 function solution(arrayA, arrayB) {
-  var answer = [];
-  //console.log(getCommonDivisors(arrayA), getCommonDivisors(arrayB));
-  //배열당 공약수 구하기
-  const commonDivisorsA = getCommonDivisors(arrayA);
-  const commonDivisorsB = getCommonDivisors(arrayB);
-  //A공약수중 arrayB가 나누어 지지 않는 최대 수 찾기
-  for (let i = 0; i < commonDivisorsA.length; i++) {
-    if(arrayB.every(el=> el % commonDivisorsA[i] !== 0)) {
-      answer.push(commonDivisorsA[i]);
-      break;
-    }
-  }
-  //B공약수중 arrayA가 나누어 지지 않는 최대 수 찾기
-  for (let i = 0; i < commonDivisorsB.length; i++) {
-    if(arrayA.every(el=> el % commonDivisorsB[i] !== 0)) {
-      answer.push(commonDivisorsB[i]);
-      break;
-    }
-  }
-  if(answer.length === 0) return 0;
+  let answer = [];  
+  //배열당 최대공약수 구하기
+  const gcdA = getGCD(arrayA);
+  const gcdB = getGCD(arrayB);
+  //각 배열의 최대공약수를 다른배열에 나누어 지는지 확인
+  if (arrayB.every((el) => el % gcdA !== 0)) answer.push(gcdA);
+  if (arrayA.every((el) => el % gcdB !== 0)) answer.push(gcdB);
+
+  if (answer.length === 0) return 0;
   return Math.max(...answer);
 }
 
@@ -78,21 +67,6 @@ function getGCD(arr) {
   }
   return result;
 }
-
-function getCommonDivisors(arr) {
-  let gcdValue = getGCD(arr);
-  let commonDivisors = [];
-  for (let i = 1; i <= Math.sqrt(gcdValue); i++) {
-    if (gcdValue % i === 0) {
-      commonDivisors.push(i);
-      if (i !== gcdValue / i) {
-        commonDivisors.push(gcdValue / i);
-      }
-    }
-  }
-  return commonDivisors.sort((a, b) => b - a);
-}
-
 
 /* function solution(arrayA, arrayB) {
   const a = getAnswer(arrayA, arrayB);
