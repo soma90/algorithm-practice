@@ -30,7 +30,7 @@ name	return
 "JAN"	23
 */
 
-function solution1(name) {
+function solution(name) {
   let answer = new Set();
 
   let pos = 0;
