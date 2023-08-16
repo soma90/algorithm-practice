@@ -55,9 +55,11 @@ ex3.png
 */
 
 function solution(grid) {
+  const rc = grid.length;
+  const cc = grid[0].length;
   let answer = [];
-  let visited = Array.from({ length: grid.length }, () =>
-    Array.from({ length: grid[0].length }, () => Array(4).fill(false))
+  let visited = Array.from({ length: rc }, () =>
+    Array.from({ length: cc }, () => Array(4).fill(false))
   );
 
   const findPath = (row, col, dir, len) => {
@@ -79,18 +81,16 @@ function solution(grid) {
       visited[row][col][newDir] = true;
       //다음 루트 설정
       const nextDirValues = [1, 0, 3, 2];
-      row = (row + dr[newDir]) % grid.length;
-      if (row < 0) row = grid.length - 1;
-      col = (col + dc[newDir]) % grid[0].length;
-      if (col < 0) col = grid[0].length - 1;
+      row = (row + dr[newDir] + rc) % rc;
+      col = (col + dc[newDir] + cc) % cc;
       dir = nextDirValues[newDir];
       len++;
     }
   };
 
   //시작위치에서 사이클 찾기
-  for (let r = 0; r < grid.length; r++) {
-    for (let c = 0; c < grid[0].length; c++) {
+  for (let r = 0; r < rc; r++) {
+    for (let c = 0; c < cc; c++) {
       for (let d = 0; d < 4; d++) {
         findPath(r, c, d, 0);
       }
