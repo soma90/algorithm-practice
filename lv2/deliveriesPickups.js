@@ -86,7 +86,7 @@ function solution(cap, n, deliveries, pickups) {
     let dist = 0;
     while (_cap > 0) {
       const box = arr.at(-1);
-      if (box !== 0 && _cap > 0) {
+      if (box !== 0) {
         arr[arr.length - 1] = box - _cap;
         _cap -= box;
         if (dist === 0) dist = arr.length;
