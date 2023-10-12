@@ -8,7 +8,8 @@
 ├── lv1 : 프로그래머스 lv1 문제<br/>
 ├── lv2 : 프로그래머스 lv2 문제<br/>
 ├── lv3 : 프로그래머스 lv3 문제<br/>
-└── recursion : 코드스테이츠 재귀관련 문제<br/>
+├── recursion : 코드스테이츠 재귀관련 문제<br/>
+└─ README.md<br/>
 
 ## 사용한 기술 스택 및 라이브러리
 * Javascript, Node.js
