@@ -1,9 +1,7 @@
-/* 보류 다익스트라 이용? */
-
 function solution(n, paths, gates, summits) {
-  let answer = [];
-  let intensity = Infinity;
-  let visited = Array.from({ length: n + 1 }, () => Infinity);
+  let answer = [0, Infinity];
+  let intensity = Array.from({ length: n + 1 }, () => Infinity);
+  let heap = new MinHeap();
   let pathsMap = new Map();
   let gatesMap = new Map();
   let summitsMap = new Map();
@@ -21,64 +19,116 @@ function solution(n, paths, gates, summits) {
   }
   for (const gate of gates) {
     gatesMap.set(gate, true);
+    //heap에 출입구 정보 넣어주기
+    intensity[gate] = 0;
+    heap.insert([gate, 0]);
   }
   for (const summit of summits) {
     summitsMap.set(summit, true);
   }
 
-  //path intensity순으로 정렬
-  for (let [key, val] of pathsMap) {
-    pathsMap.set(
-      key,
-      val.sort((a, b) => a[1] - b[1])
-    );
+  //다익스트라를 이용해 지점별 최소 intensity 갱신
+  while (heap.items.length > 0) {
+    console.log(11, heap.items);
+    const [point, itsity] = heap.popMin();
+    //intensity[point] = Math.min(intensity[point], itsity);
+    if (
+      intensity[point] < itsity ||
+      summitsMap.get(point) //산봉우리일 경우
+    )
+      continue;
+
+    for (let [nextPoint, nextItsity] of pathsMap.get(point)) {
+      const nextItsityMax = Math.max(nextItsity, intensity[point]);
+      if (intensity[nextPoint] <= nextItsityMax) continue;
+
+      intensity[nextPoint] = nextItsityMax;
+      heap.insert([nextPoint, nextItsityMax]);
+    }
   }
 
-  //dfs를이용해 등산로 찾기
-  let dfs = (point, minIntensity = 0) => {
-    if (summitsMap.get(point)) {
-      intensity = Math.min(intensity, minIntensity);
-      answer.push([point, minIntensity]);
-      return;
-    }
+  //intensity가 최소값과 봉우리 구하기
+  summits
+    .sort((a, b) => a - b)
+    .forEach((summit) => {
+      if (intensity[summit] < answer[1]) answer = [summit, intensity[summit]];
+    });
+  //console.log(intensity);
+  return answer;
+}
 
-    for (let [nextPoint, itsity] of pathsMap.get(point)) {
-      let nextMinItsity = Math.max(minIntensity, itsity);
+class MinHeap {
+  constructor() {
+    this.items = [];
+  }
+
+  swap(index1, index2) {
+    [this.items[index1], this.items[index2]] = [
+      this.items[index2],
+      this.items[index1],
+    ];
+  }
+
+  insert(val) {
+    this.items.push(val);
+    let index = this.items.length - 1;
+    while (index > 0) {
+      let parentIndex = Math.floor((index - 1) / 2);
+      //부모보다 자식이 작으면 자리 바꾸기
+      if (this.items[index][1] < this.items[parentIndex][1]) {
+        this.swap(index, parentIndex);
+      } else break;
+      index = parentIndex;
+    }
+  }
+
+  popMin() {
+    const minVal = this.items[0];
+    this.items[0] = this.items.at(-1);
+    this.items.pop();
+    if (this.items.length <= 1) return minVal;
+
+    let index = 0;
+    while (true) {
+      //두 자식중 작은값의 자식 인덱스 찾기
+      let lChildIndex = index * 2 + 1;
+      let rChildIndex = index * 2 + 2;
+      let minIndex = index;
       if (
-        itsity > intensity ||
-        visited[nextPoint] <= nextMinItsity ||
-        gatesMap.get(nextPoint)
-      )
-        continue;
-      visited[nextPoint] = nextMinItsity;
-
-      dfs(nextPoint, nextMinItsity);
+        lChildIndex < this.items.length &&
+        this.items[minIndex][1] > this.items[lChildIndex][1]
+      ) {
+        minIndex = lChildIndex;
+      }
+      if (
+        rChildIndex < this.items.length &&
+        this.items[minIndex][1] > this.items[rChildIndex][1]
+      ) {
+        minIndex = rChildIndex;
+      }
+      //위치 바꾸기
+      if (minIndex !== index) {
+        this.swap(index, minIndex);
+        index = minIndex;
+      } else break;
     }
-  };
-
-  //시작지점부터 등산로 찾기
-  for (const gate of gates) {
-    visited[gate] = 0;
-    dfs(gate);
+    return minVal;
   }
-
-  return answer.sort((a, b) => {
-    if (a[1] === b[1]) return a[0] - b[0];
-    return a[1] - b[1];
-  })[0];
 }
 
 let result = solution(
-  7,
+  6,
   [
-    [1, 4, 4],
-    [1, 6, 1],
-    [1, 7, 3],
-    [2, 5, 2],
-    [3, 7, 4],
-    [5, 6, 6],
+    [1, 2, 3],
+    [2, 3, 5],
+    [2, 4, 2],
+    [2, 5, 4],
+    [3, 4, 4],
+    [4, 5, 3],
+    [4, 6, 1],
+    [5, 6, 1],
   ],
-  [1],
-  [2, 3, 4]
+  [1, 3],
+  [5]
 );
 console.log(result);
