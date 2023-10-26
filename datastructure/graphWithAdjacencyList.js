@@ -125,7 +125,7 @@ const adjList = new GraphWithAdjacencyList();
 adjList.addVertex("Seoul");
 adjList.addVertex("Daejeon");
 adjList.addVertex("Busan");
-console.log(adjList.vertices)
+console.log(adjList.vertices);
 
 console.log(adjList.contains("Seoul")); // true
 console.log(adjList.contains("Jeonju")); // false
