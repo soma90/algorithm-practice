@@ -35,5 +35,5 @@ function solution(price, money, count) {
   return money - totalPrice < 0 ? totalPrice - money : 0;
 }
 
-let result = solution("0123");
+let result = solution(3, 20, 4);
 console.log(result);
