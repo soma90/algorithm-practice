@@ -57,6 +57,7 @@ N이 3보다 클 경우, 크기 N의 패턴은 공백으로 채워진 가운데�
 입력크기에 따라 전체 별을 찍어준다.
 전체 별 그림에서 가운데 구역의 별을 지워준다.
 지워진 구역을 둘러싼 다음 별을 지울 구역은 항상 9개 이므로 9개의 시작 위치를 구해서 재귀 호출해준다.
+9개의 구역 중 지워진 가운데 구역에서는 재귀호출 하지 않는다.
 */
 
 const fs = require("fs");
@@ -80,6 +81,8 @@ const eraseStars = (n, startRow, startCol) => {
 
   // 둘러싼 9개의 구역에 대해 시작지점을 정해서 재귀 호출
   for (let i = 0; i < 9; i++) {
+    if (i === 4) continue; // 지워진 구간에서는 호출하지 않기
+
     const nextStartRow = startRow + nextN * (i % 3);
     const nextStartCol = startCol + nextN * Math.floor(i / 3);
 
