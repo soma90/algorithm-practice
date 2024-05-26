@@ -1,9 +1,9 @@
 /* 
 https://school.programmers.co.kr/learn/courses/30/lessons/132265#qna
 
----롤케이크 자르기---
+--- 롤케이크 자르기 ---
 
---문제 설명
+-- 문제 설명
 철수는 롤케이크를 두 조각으로 잘라서 동생과 한 조각씩 나눠 먹으려고 합니다. 이 롤케이크에는 여러가지 
 토핑들이 일렬로 올려져 있습니다. 철수와 동생은 롤케이크를 공평하게 나눠먹으려 하는데, 그들은 롤케이크의 
 크기보다 롤케이크 위에 올려진 토핑들의 종류에 더 관심이 많습니다. 그래서 잘린 조각들의 크기와 올려진 
@@ -24,26 +24,63 @@ https://school.programmers.co.kr/learn/courses/30/lessons/132265#qna
 롤케이크에 올려진 토핑들의 번호를 저장한 정수 배열 topping이 매개변수로 주어질 때, 롤케이크를 공평하게 
 자르는 방법의 수를 return 하도록 solution 함수를 완성해주세요.
 
---제한사항
+-- 제한사항
 1 ≤ topping의 길이 ≤ 1,000,000
 1 ≤ topping의 원소 ≤ 10,000
 
---입출력 예
+-- 입출력 예
 topping	result
 [1, 2, 1, 3, 1, 4, 1, 2]	2
 [1, 2, 3, 1, 4]	0
 
---입출력 예 설명
--입출력 예 #1
+-- 입출력 예 설명
+- 입출력 예 #1
 
 롤케이크를 [1, 2, 1, 3], [1, 4, 1, 2] 또는 [1, 2, 1, 3, 1], [4, 1, 2]와 같이 자르면 철수와 동생은 
 각각 세 가지 토핑을 맛볼 수 있습니다. 이 경우 공평하게 롤케이크를 나누는 방법은 위의 두 가지만 존재합니다.
 
--입출력 예 #2
+- 입출력 예 #2
 
 롤케이크를 공평하게 나눌 수 없습니다.
 */
 
+/* 
+-- 풀이
+전체 토핑당의 갯수를 맵에 저장 합니다.
+롤케이크의 앞부분 부터 순회하면서 자른 앞부분의 토핑의 갯수를 저장하고 전체 토핑의 갯수를 업데이트를 합니다.
+앞부분의 토핑의 갯수와 남은 토핑의 갯수를 비교해서 같으면 공평하게 롤케이크를 나눈것이므로 결과값을 업데이트
+합니다. 
+앞부분의 토핑의 갯수가 남은 토핑의 갯수를 초과할 경우 같아질 경우가 없어 지므로 순회를 종료합니다.
+*/
+
+/* 풀이 1 */
+function solution(topping) {
+  let answer = 0;
+  const toppingMap = new Map();
+  const slicedToppingMap = new Map();
+
+  for (const t of topping) {
+    toppingMap.set(t, (toppingMap.get(t) || 0) + 1);
+  }
+
+  for (const t of topping) {
+    // 자른 앞부분의 토핑 갯수를 업데이트
+    slicedToppingMap.set(t, (slicedToppingMap.get(t) || 0) + 1);
+
+    // 자른 뒷부분의 토핑 갯수를 업데이트
+    const toppingCount = toppingMap.get(t);
+    if (toppingCount > 1) toppingMap.set(t, toppingCount - 1);
+    else toppingMap.delete(t);
+
+    // 양쪽 토핑 갯수 비교
+    if (slicedToppingMap.size === toppingMap.size) answer++;
+    else if (slicedToppingMap.size > toppingMap.size) break;
+  }
+
+  return answer;
+}
+
+/* 풀이 2 */
 function solution(topping) {
   let rollCount = Array.from({ length: topping.length }, () => [0, 0]);
   let toppingMap = new Map();
