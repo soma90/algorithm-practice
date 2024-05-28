@@ -1,17 +1,17 @@
 /* 
 https://school.programmers.co.kr/learn/courses/30/lessons/92341
 
----주차 요금 계산---
+---  주차 요금 계산  ---
 
---문제 설명
+--  문제 설명
 주차장의 요금표와 차량이 들어오고(입차) 나간(출차) 기록이 주어졌을 때, 차량별로 주차 요금을 계산하려고 합니다. 
 아래는 하나의 예시를 나타냅니다.
 
--요금표
+- 요금표
 기본 시간(분)	기본 요금(원)	단위 시간(분)	단위 요금(원)
 180	5000	10	600
  
--입/출차 기록
+- 입/출차 기록
 시각(시:분)	차량 번호	내역
 05:34	5961	입차
 06:00	0000	입차
@@ -23,7 +23,7 @@ https://school.programmers.co.kr/learn/courses/30/lessons/92341
 22:59	5961	입차
 23:00	5961	출차
  
--자동차별 주차 요금
+- 자동차별 주차 요금
 차량 번호	누적 주차 시간(분)	주차 요금(원)
 0000	34 + 300 = 334	5000 + ⌈(334 - 180) / 10⌉ x 600 = 14600
 0148	670	5000 +⌈(670 - 180) / 10⌉x 600 = 34400
@@ -38,7 +38,7 @@ https://school.programmers.co.kr/learn/courses/30/lessons/92341
 주차 요금을 나타내는 정수 배열 fees, 자동차의 입/출차 내역을 나타내는 문자열 배열 records가 매개변수로 주어집니다. 
 차량 번호가 작은 자동차부터 청구할 주차 요금을 차례대로 정수 배열에 담아서 return 하도록 solution 함수를 완성해주세요.
 
---제한사항
+-- 제한사항
 fees의 길이 = 4
 
 fees[0] = 기본 시간(분)
@@ -66,7 +66,7 @@ records는 하루 동안의 입/출차된 기록만 담고 있으며, 입차된 
 주차장에 없는 차량이 출차되는 경우
 주차장에 이미 있는 차량(차량번호가 같은 차량)이 다시 입차되는 경우
 
---입출력 예
+-- 입출력 예
 fees	records	result
 [180, 5000, 10, 600]	["05:34 5961 IN", "06:00 0000 IN", "06:34 0000 OUT", 
 "07:59 5961 OUT", "07:59 0148 IN", "18:59 0000 IN", "19:09 0148 OUT", "22:59 5961 IN", "23:00 5961 OUT"]	
@@ -76,11 +76,11 @@ fees	records	result
 
 [1, 461, 1, 10]	["00:00 1234 IN"]	[14841]
 
---입출력 예 설명
--입출력 예 #1
+-- 입출력 예 설명
+- 입출력 예 #1
 문제 예시와 같습니다.
 
--입출력 예 #2
+- 입출력 예 #2
 요금표
 기본 시간(분)	기본 요금(원)	단위 시간(분)	단위 요금(원)
 120	0	60	591 
@@ -99,7 +99,7 @@ fees	records	result
 3961	120 + 1 = 121	0 +⌈(121 - 120) / 60⌉x 591 = 591
 3961번 차량은 2번째 입차된 후에는 출차된 내역이 없으므로, 23:59에 출차되었다고 간주합니다.
  
--입출력 예 #3
+- 입출력 예 #3
 요금표
 기본 시간(분)	기본 요금(원)	단위 시간(분)	단위 요금(원)
 1	461	1	10 
@@ -114,10 +114,86 @@ fees	records	result
 1234번 차량은 출차 내역이 없으므로, 23:59에 출차되었다고 간주합니다.
 */
 
+/*
+-- 풀이
+차량별 누적 주차시간을 구해서 map에 저장합니다. 출차 시간이 없는 차량은 추가로 주차시간을 계산해 추가 합니다.
+차량 번호 오름차순으로 정렬한 후 요금을 구하고 결과값에 저장합니다.
+*/
+
+/*
+풀이 1
+*/
+function solution(fees, records) {
+  const result = [];
+  const parkingTimeMap = new Map();
+  const inTimeMap = new Map();
+
+  /**
+   * 누적 주차시간 구하기
+   */
+  for (const record of records) {
+    const [time, num, state] = record.split(" ");
+
+    if (state === "IN") {
+      inTimeMap.set(num, time);
+      continue;
+    }
+
+    // 주차된 시간
+    const inTime = inTimeMap.get(num);
+    const parkingTime = hourToMin(time) - hourToMin(inTime);
+
+    // 주차시간 저장
+    parkingTimeMap.set(num, (parkingTimeMap.get(num) || 0) + parkingTime);
+
+    // 입차 시간 삭제
+    inTimeMap.delete(num);
+  }
+
+  // 출차기록이 없는 경우 주차시간 추가
+  for (const [num, inTime] of inTimeMap.entries()) {
+    // 주차된 시간
+    const parkingTime = hourToMin("23:59") - hourToMin(inTime);
+
+    // 주차시간 저장
+    parkingTimeMap.set(num, (parkingTimeMap.get(num) || 0) + parkingTime);
+  }
+
+  /**
+   * 주차 요금 구하기
+   */
+  // 주차시간 정보를 차량 번호에 대해 오름 차순으로 정렬
+  const timeArr = [...parkingTimeMap].sort(
+    (a, b) => parseInt(a[0]) - parseInt(b[0])
+  );
+
+  for (const [_, time] of timeArr) {
+    // 주차 시간에 대한 요금 구하기
+    const feeForTime =
+      time - fees[0] <= 0 ? 0 : Math.ceil((time - fees[0]) / fees[2]);
+
+    // 주차 요금 구하기
+    const fee = fees[1] + feeForTime * fees[3];
+
+    // 요금 결과에 저장
+    result.push(fee);
+  }
+
+  return result;
+}
+
+function hourToMin(time) {
+  const [hour, min] = time.split(":").map(Number);
+  return hour * 60 + min;
+}
+
+/*
+풀이 2
+*/
 function solution(fees, records) {
   let answer = [];
   let recordsMap = new Map();
-  
+
   records.forEach((record) => {
     let [time, num, status] = record.split(" ");
     //시간 분으로 변환
