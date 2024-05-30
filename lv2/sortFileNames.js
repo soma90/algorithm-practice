@@ -1,9 +1,9 @@
 /* 
 https://school.programmers.co.kr/learn/courses/30/lessons/17686
 
----파일명 정렬---
+--- 파일명 정렬 ---
 
---문제 설명
+-- 문제 설명
 세 차례의 코딩 테스트와 두 차례의 면접이라는 기나긴 블라인드 공채를 무사히 통과해 카카오에 입사한 
 무지는 파일 저장소 서버 관리를 맡게 되었다.
 
@@ -42,7 +42,7 @@ MUZI와 muzi, MuZi는 정렬 시에 같은 순서로 취급된다.
  muzi1.png가 입력으로 들어오면, 정렬 후에도 입력 시 주어진 두 파일의 순서가 바뀌어서는 안 된다.
 무지를 도와 파일명 정렬 프로그램을 구현하라.
 
---입력 형식
+-- 입력 형식
 입력으로 배열 files가 주어진다.
 
 files는 1000 개 이하의 파일명을 포함하는 문자열 배열이다.
@@ -51,10 +51,10 @@ files는 1000 개 이하의 파일명을 포함하는 문자열 배열이다.
 중복된 파일명은 없으나, 대소문자나 숫자 앞부분의 0 차이가 있는 경우는 함께 주어질 수 있다. 
 (muzi1.txt, MUZI1.txt, muzi001.txt, muzi1.TXT는 함께 입력으로 주어질 수 있다.)
 
---출력 형식
+-- 출력 형식
 위 기준에 따라 정렬된 배열을 출력한다.
 
---입출력 예제
+-- 입출력 예제
 입력: ["img12.png", "img10.png", "img02.png", "img1.png", "IMG01.GIF", "img2.JPG"]
 출력: ["img1.png", "IMG01.GIF", "img02.png", "img2.JPG", "img10.png", "img12.png"]
 
@@ -62,6 +62,59 @@ files는 1000 개 이하의 파일명을 포함하는 문자열 배열이다.
 출력: ["A-10 Thunderbolt II", "B-50 Superfortress", "F-5 Freedom Fighter", "F-14 Tomcat"]
 */
 
+/**
+ * -- 풀이 1
+ * file에 대해 head number tail로 나누어 배열에 저장합니다
+ * file의 각 문자를 head에 처음에 저장하고 다음 문자가 숫자일 경우 number에 저장합니다.
+ * 다음 문자가 다시 숫자가 아닌 문자가 나올 경우 tail에 저장 합니다.
+ * 나누어 저장한 배열을 head 의 사전순으로 우선 정렬하고 number의 오름 차순으로 정렬 후
+ * 결과값을 구합니다.
+ */
+function solution(files) {
+  const splitedFiles = [];
+
+  /**
+   * file을 head number tail로 나누어 저장
+   */
+  for (const file of files) {
+    let head = "",
+      number = "",
+      tail = "",
+      part = 0;
+
+    for (let i = 0; i < file.length; i++) {
+      const currentChar = file[i];
+      const nextChar = file[i + 1];
+
+      if (part === 0) {
+        head += currentChar;
+        if (nextChar !== " " && !Number.isNaN(Number(nextChar))) part = 1;
+      } else if (part === 1) {
+        number += currentChar;
+        if (nextChar === " " || Number.isNaN(Number(nextChar))) part = 2;
+      } else {
+        tail += currentChar;
+      }
+    }
+
+    splitedFiles.push([head, number, tail]);
+  }
+
+  /**
+   * head를 사전순으로 정렬, number를 오름차순으로 정렬
+   */
+  splitedFiles.sort((a, b) => {
+    if (a[0].toLocaleLowerCase() !== b[0].toLocaleLowerCase())
+      return a[0].toLocaleLowerCase().localeCompare(b[0].toLocaleLowerCase());
+    if (Number(a[1]) !== Number(b[1])) return Number(a[1]) - Number(b[1]);
+  });
+
+  return splitedFiles.map((el) => el.join(""));
+}
+
+/**
+ * -- 풀이 2
+ */
 function solution(files) {
   //files를 head number tail로 나눔
   let splitFiles = files.map((file) => file.split(/(\d+)/).filter(Boolean));
