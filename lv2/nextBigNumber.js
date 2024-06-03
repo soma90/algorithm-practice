@@ -1,7 +1,9 @@
 /* 
----다음 큰 숫자---
+https://school.programmers.co.kr/learn/courses/30/lessons/12911
 
---문제 설명
+--- 다음 큰 숫자 ---
+
+-- 문제 설명
 자연수 n이 주어졌을 때, n의 다음 큰 숫자는 다음과 같이 정의 합니다.
 
 조건 1. n의 다음 큰 숫자는 n보다 큰 자연수 입니다.
@@ -11,21 +13,25 @@
 
 자연수 n이 매개변수로 주어질 때, n의 다음 큰 숫자를 return 하는 solution 함수를 완성해주세요.
 
---제한 사항
+-- 제한 사항
 n은 1,000,000 이하의 자연수 입니다.
 
---입출력 예
+-- 입출력 예
 n	result
 78	83
 15	23
 
---입출력 예 설명
+-- 입출력 예 설명
 입출력 예#1
 문제 예시와 같습니다.
 입출력 예#2
 15(1111)의 다음 큰 숫자는 23(10111)입니다.
 */
 
+/**
+ * 입력된 수를 2진수로 변환뒤 1의 갯수를 구합니다
+ * 입력된 수의 다음 수 부터 같은 1의 갯수를 같는 수를 탐색하여 구합니다.
+ */
 function solution(n) {
   let answer = 0;
   const num = n.toString(2).split("1").length - 1;
@@ -41,5 +47,5 @@ function solution(n) {
   return answer;
 }
 
-let result = solution(15);
+let result = solution(78);
 console.log(result);
