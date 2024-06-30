@@ -1,7 +1,9 @@
 /* 
----영어 끝말잇기---
+https://school.programmers.co.kr/learn/courses/30/lessons/12981
 
---문제 설명
+--- 영어 끝말잇기 ---
+
+-- 문제 설명
 1부터 n까지 번호가 붙어있는 n명의 사람이 영어 끝말잇기를 하고 있습니다. 영어 끝말잇기는 다음과 같은 규칙으로 진행됩니다.
 
 1번부터 번호 순서대로 한 사람씩 차례대로 단어를 말합니다.
@@ -25,7 +27,7 @@ tank → kick → know → wheel → land → dream → mother → robot → tan
 사람의 수 n과 사람들이 순서대로 말한 단어 words 가 매개변수로 주어질 때, 
 가장 먼저 탈락하는 사람의 번호와 그 사람이 자신의 몇 번째 차례에 탈락하는지를 구해서 return 하도록 solution 함수를 완성해주세요.
 
---제한 사항
+-- 제한 사항
 끝말잇기에 참여하는 사람의 수 n은 2 이상 10 이하의 자연수입니다.
 words는 끝말잇기에 사용한 단어들이 순서대로 들어있는 배열이며, 길이는 n 이상 100 이하입니다.
 단어의 길이는 2 이상 50 이하입니다.
@@ -34,14 +36,14 @@ words는 끝말잇기에 사용한 단어들이 순서대로 들어있는 배열
 정답은 [ 번호, 차례 ] 형태로 return 해주세요.
 만약 주어진 단어들로 탈락자가 생기지 않는다면, [0, 0]을 return 해주세요.
 
---입출력 예
+-- 입출력 예
 n	words	result
 3	["tank", "kick", "know", "wheel", "land", "dream", "mother", "robot", "tank"]	[3,3]
 5	["hello", "observe", "effect", "take", "either", "recognize", "encourage", "ensure", "establish", "hang", "gather", "refer", "reference", "estimate", "executive"]	[0,0]
 2	["hello", "one", "even", "never", "now", "world", "draw"]	[1,3]
 
---입출력 예 설명
-입출력 예 #1
+-- 입출력 예 설명
+- 입출력 예 #1
 3명의 사람이 끝말잇기에 참여하고 있습니다.
 
 1번 사람 : tank, wheel, mother
@@ -50,7 +52,7 @@ n	words	result
 와 같은 순서로 말을 하게 되며, 3번 사람이 자신의 세 번째 차례에 말한 tank라는 단어가 1번 사람이 자신의 첫 번째 차례에 말한 tank와 같으므로
  3번 사람이 자신의 세 번째 차례로 말을 할 때 처음 탈락자가 나오게 됩니다.
 
-입출력 예 #2
+- 입출력 예 #2
 5명의 사람이 끝말잇기에 참여하고 있습니다.
 
 1번 사람 : hello, recognize, gather
@@ -60,7 +62,7 @@ n	words	result
 5번 사람 : either, hang, executive
 와 같은 순서로 말을 하게 되며, 이 경우는 주어진 단어로만으로는 탈락자가 발생하지 않습니다. 따라서 [0, 0]을 return하면 됩니다.
 
-입출력 예 #3
+- 입출력 예 #3
 2명의 사람이 끝말잇기에 참여하고 있습니다.
 
 1번 사람 : hello, even, now, draw
@@ -68,21 +70,24 @@ n	words	result
 와 같은 순서로 말을 하게 되며, 1번 사람이 자신의 세 번째 차례에 'r'로 시작하는 단어 대신, n으로 시작하는 now를 말했기 때문에 이때 처음 탈락자가 나오게 됩니다.
 */
 
+/**
+ * -- 풀이
+ * 등장했던 단어들을 순회하면서 등장했던 단어와 이전 단어의 끝문자와 지금 단어의 첫문자가 같은지 체크합니다.
+ * 등장했던 단어를 체크하기 위해 맵을 만들고 저장합니다
+ * 규칙에 맞지 않는 단어를 발견할 경우 사람의 번호와 차례를 계산해서 리턴합니다.
+ */
 function solution(n, words) {
   let answer = [0, 0];
-  let used = [words[0]];
+  const wordMap = new Map([[words[0], true]]);
 
   for (let i = 1; i < words.length; i++) {
-    if (
-      used.includes(words[i]) ||
-      words[i - 1].at(-1) !== words[i].at(0) ||
-      words[i].length === 1
-    ) {
-      answer = [(i % n) + 1, Math.floor(i / n) + 1];
+    const word = words[i];
+    if (wordMap.get(word) || words[i - 1].at(-1) !== word.at(0)) {
+      result = [(i % n) + 1, Math.floor(i / n) + 1];
       break;
     }
 
-    used.push(words[i]);
+    wordMap.set(word, true);
   }
 
   return answer;
