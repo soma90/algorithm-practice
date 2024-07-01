@@ -1,7 +1,9 @@
 /* 
----귤 고르기---
+https://school.programmers.co.kr/learn/courses/30/lessons/138476
 
---문제 설명
+--- 귤 고르기 ---
+
+-- 문제 설명
 경화는 과수원에서 귤을 수확했습니다. 경화는 수확한 귤 중 'k'개를 골라 상자 하나에 담아 판매하려고 합니다. 
 그런데 수확한 귤의 크기가 일정하지 않아 보기에 좋지 않다고 생각한 경화는 귤을 크기별로 분류했을 때 서로 다른 종류의 수를 최소화하고 싶습니다.
 
@@ -12,28 +14,54 @@
 경화가 한 상자에 담으려는 귤의 개수 k와 귤의 크기를 담은 배열 tangerine이 매개변수로 주어집니다. 
 경화가 귤 k개를 고를 때 크기가 서로 다른 종류의 수의 최솟값을 return 하도록 solution 함수를 작성해주세요.
 
---제한사항
+-- 제한사항
 1 ≤ k ≤ tangerine의 길이 ≤ 100,000
 1 ≤ tangerine의 원소 ≤ 10,000,000
 
---입출력 예
+-- 입출력 예
 k	tangerine	result
 6	[1, 3, 2, 5, 4, 5, 2, 3]	3
 4	[1, 3, 2, 5, 4, 5, 2, 3]	2
 2	[1, 1, 1, 1, 2, 2, 2, 3]	1
 
---입출력 예 설명
-입출력 예 #1
+-- 입출력 예 설명
+- 입출력 예 #1
 본문에서 설명한 예시입니다.
 
-입출력 예 #2
+- 입출력 예 #2
 경화는 크기가 2인 귤 2개와 3인 귤 2개 또는 2인 귤 2개와 5인 귤 2개 또는 3인 귤 2개와 5인 귤 2개로 귤을 판매할 수 있습니다. 
 이때의 크기 종류는 2가지로 이 값이 최소가 됩니다.
 
-입출력 예 #3
+- 입출력 예 #3
 경화는 크기가 1인 귤 2개를 판매하거나 2인 귤 2개를 판매할 수 있습니다. 이때의 크기 종류는 1가지로, 이 값이 최소가 됩니다.
 */
 
+/**
+ * -- 풀이1
+ * 귤의 크기에 따라 갯수를 맵에 저장합니다.
+ * 가장 많은 갯수의 귤부터 k개의 이상이 되는 귤의 종류의 수를 구해 리턴합니다.
+ */
+function solution(k, tangerine) {
+  let answer = 0;
+  const tangerineMap = new Map();
+
+  for (const t of tangerine) {
+    tangerineMap.set(t, (tangerineMap.get(t) || 0) + 1);
+  }
+
+  [...tangerineMap]
+    .sort((a, b) => b[1] - a[1])
+    .reduce((acc, [_, count]) => {
+      if (acc < k) answer++;
+      return acc + count;
+    }, 0);
+
+  return answer;
+}
+
+/**
+ * -- 풀이2
+ */
 function solution(k, tangerine) {
   let answer = 0;
   let tangerineMap = new Map();
