@@ -1,7 +1,9 @@
 /* 
----뉴스 클러스터링---
+https://school.programmers.co.kr/learn/courses/30/lessons/17677
 
---문제 설명
+--- 뉴스 클러스터링 ---
+
+-- 문제 설명
 
 여러 언론사에서 쏟아지는 뉴스, 특히 속보성 뉴스를 보면 비슷비슷한 제목의 기사가 많아 정작 필요한 기사를 찾기가 어렵다. 
 Daum 뉴스의 개발 업무를 맡게 된 신입사원 튜브는 사용자들이 편리하게 다양한 뉴스를 찾아볼 수 있도록 문제점을 개선하는 업무를 맡게 되었다.
@@ -36,17 +38,17 @@ Daum 뉴스의 개발 업무를 맡게 된 신입사원 튜브는 사용자들�
 교집합은 {FR, NC}, 합집합은 {FR, RA, AN, NC, CE, RE, EN, CH}가 되므로, 
 두 문자열 사이의 자카드 유사도 J("FRANCE", "FRENCH") = 2/8 = 0.25가 된다.
 
---입력 형식
+-- 입력 형식
 입력으로는 str1과 str2의 두 문자열이 들어온다. 각 문자열의 길이는 2 이상, 1,000 이하이다.
 입력으로 들어온 문자열은 두 글자씩 끊어서 다중집합의 원소로 만든다. 이때 영문자로 된 글자 쌍만 유효하고, 기타 공백이나 숫자, 
 특수 문자가 들어있는 경우는 그 글자 쌍을 버린다. 예를 들어 "ab+"가 입력으로 들어오면, "ab"만 다중집합의 원소로 삼고, "b+"는 버린다.
 다중집합 원소 사이를 비교할 때, 대문자와 소문자의 차이는 무시한다. "AB"와 "Ab", "ab"는 같은 원소로 취급한다.
 
---출력 형식
+-- 출력 형식
 입력으로 들어온 두 문자열의 자카드 유사도를 출력한다. 유사도 값은 0에서 1 사이의 실수이므로, 
 이를 다루기 쉽도록 65536을 곱한 후에 소수점 아래를 버리고 정수부만 출력한다.
 
---예제 입출력
+-- 예제 입출력
 str1	str2	answer
 FRANCE	french	16384
 handshake	shake hands	65536
@@ -54,11 +56,70 @@ aa1+aa2	AAAA12	43690
 E=M*C^2	e=m*c^2	65536
 */
 
+/**
+ * -- 풀이 1
+ * 문자열별 집합 단어의 수를 각각의 맵에 저장 합니다.
+ * 첫번째 맵에 저장된 단어가 두번째 맵에 있는지 확인하고 있으면 교집합과 합집합의 수를 업데이트하고 두번째맵에서 해당단어를 삭제합니다.
+ * 위의 단계가 끝난뒤 두번째맵에 원소가 남아있으면 교집합이 안된 원소이므로 합집합의 수에 더해줍니다.
+ * 교집합과 합집합의 수를 이용해 자카드 유사도를 구합니다.
+ */
 function solution(str1, str2) {
+  // 문자열별 집합을 맵에 저장
+  const storeSetElements = (str, setElementsMap) => {
+    const alphabet = "abcdefghijklmnopqrstuvwxyz";
+
+    for (let i = 0; i < str.length - 1; i++) {
+      const char1 = str[i].toLowerCase();
+      const char2 = str[i + 1].toLowerCase();
+
+      if (alphabet.includes(char1) && alphabet.includes(char2)) {
+        const key = char1 + char2;
+        setElementsMap.set(key, (setElementsMap.get(key) || 0) + 1);
+      }
+    }
+  };
+
+  const setElementsMap1 = new Map();
+  const setElementsMap2 = new Map();
+
+  storeSetElements(str1, setElementsMap1);
+  storeSetElements(str2, setElementsMap2);
+
+  // 합집합의 수와 교집합 수 구하기
+  let intersection = 0;
+  let union = 0;
+
+  for (const [key, value] of setElementsMap1) {
+    const value2 = setElementsMap2.get(key);
+    if (value2) {
+      intersection += Math.min(value, value2);
+      union += Math.max(value, value2);
+      setElementsMap2.delete(key);
+    } else {
+      union += value;
+    }
+  }
+
+  for (const [_, value] of setElementsMap2) {
+    union += value;
+  }
+
+  // 자카드 유사도 구하기
+  if (union === 0) return 65536;
+  return Math.floor((intersection / union) * 65536);
+}
+
+let result = solution("FRANCE", "french");
+console.log(result);
+
+/**
+ * -- 풀이 2
+ */
+function solution2(str1, str2) {
   let str1Set = [];
   let str2Set = [];
 
-  //문자열별 집합만들기
+  // 문자열별 집합만들기
   const makeSet = (str, strSet) => {
     for (let i = 0; i < str.length - 1; i++) {
       if (!/[a-zA-Z]/.test(str[i]) || !/[a-zA-Z]/.test(str[i + 1])) continue;
@@ -68,7 +129,7 @@ function solution(str1, str2) {
   makeSet(str1, str1Set);
   makeSet(str2, str2Set);
 
-  //교집합 만들기
+  // 교집합 만들기
   const intersection = [];
   str1Set.forEach((val) => {
     const index = str2Set.indexOf(val);
@@ -78,15 +139,15 @@ function solution(str1, str2) {
     }
   });
 
-  //합집합 만들기
+  // 합집합 만들기
   const union = [...str1Set, ...str2Set];
 
-  //자카드 유사도 구하기
+  // 자카드 유사도 구하기
   const interLength = intersection.length;
   const unionLength = union.length;
   if (unionLength === 0) return 65536;
   return Math.floor((interLength / unionLength) * 65536);
 }
 
-let result = solution("FRANCE", "french");
-console.log(result);
+let result2 = solution2("FRANCE", "french");
+console.log(result2);
